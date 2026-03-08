@@ -2,16 +2,20 @@
 
 namespace App\Http;
 
-class JsonResponse {
-    public function __construct(
-        private mixed $data,
-        private int   $status = 200,
-    ) {}
+use App\Database\Database;
 
-    public function send(): void {
-        http_response_code($this->status);
+class JsonResponse {
+
+    static public int $status = 200;
+    static public array $data = [];
+    
+    public function __construct() {}
+
+    static public function send(): void {
+        http_response_code(self::$status);
         header('Content-Type: application/json');
-        echo json_encode($this->data);
+        echo json_encode(self::$data);
+        Database::closeDBConnection();
         exit;
     }
 }

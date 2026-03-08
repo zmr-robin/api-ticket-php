@@ -20,6 +20,7 @@ class UserController{
                 $this->data = $this->methodGet();
                 break;
             case "POST":
+                $this->data = $this->methodPost();
                 break;
             case "PUT":
                 break;
@@ -33,7 +34,19 @@ class UserController{
 
     // Create data
     private function methodPost(){
-
+        if(isset($this->request[1])){
+            switch($this->request[1]){
+                // Get (all) data for specific user
+                case "create":
+                    return $this->usr->createUser();
+                // Get role of user
+                case "role":
+                    break;
+                // Get email of user
+                case "email":
+                    break;
+            }
+        }
     }
 
     /* =================
@@ -52,7 +65,7 @@ class UserController{
             switch($this->request[1]){
                 // Get (all) data for specific user
                 case "data":
-                    break;
+                    return $this->usr->listUserData();
                 // Get role of user
                 case "role":
                     break;

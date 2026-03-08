@@ -24,7 +24,7 @@ class Database {
     }
 
     public static function closeDBConnection(){
-        self::$pdo = null;
+        self::$conn = null;
     }
 
 }

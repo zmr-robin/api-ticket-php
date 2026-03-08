@@ -17,11 +17,12 @@ Database::connectDatabase($_ENV["DB"], $_ENV["DB_TABLE"],
 $_ENV["DB_USER"], $_ENV["DB_PASS"]);
 
 // If request -> use Routing Class, else return empty string. 
-$result = (isset($_GET["url"])) 
-        ? new Router($_GET["url"], $_SERVER['REQUEST_METHOD']) 
-        : [""];
-        
-// Return Json
-$return = new JsonResponse($result->data);
-$return->send();
+if (isset($_GET["url"])) {
+    $result = new Router($_GET["url"], $_SERVER['REQUEST_METHOD']);
+    $data = $result->data ?? [];
+    JsonResponse::$data = is_array($data) ? $data : ["content" => $data];
+} else {
+    JsonResponse::$data = ["message" => "Welcome!"];
+}
 
+JsonResponse::send();

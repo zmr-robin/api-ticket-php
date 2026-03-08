@@ -4,14 +4,16 @@ namespace App\Routes;
 use App\Controllers\AuthController;
 use App\Controllers\UserController;
 
-class Router {
+class Router
+{
 
     private $request;
     public $data;
     private $status = 200;
     private $method;
 
-    function __construct($request, $method){
+    function __construct($request, $method)
+    {
         $request = explode("/", $request);
         $this->request = $request;
         $this->method = $method;
@@ -19,36 +21,37 @@ class Router {
 
     }
 
-    private function useController(){
-        switch ($this->request[0]){
+    private function useController()
+    {
+        switch ($this->request[0]) {
             case "auth":
                 $controller = new AuthController($this->request);
                 $this->data = $controller->data;
                 break;
             case "message":
-                echo "soon";
+                $this->data = ["status" => 501, "content" => "Message service coming soon"];
                 break;
             case "role":
-                echo "soon";
+                $this->data = ["status" => 501, "content" => "Role service coming soon"];
                 break;
             case "tag":
-                echo "soon";
+                $this->data = ["status" => 501, "content" => "Tag service coming soon"];
                 break;
             case "ticket":
-                echo "soon";
+                $this->data = ["status" => 501, "content" => "Ticket service coming soon"];
                 break;
             case "users":
                 $controller = new UserController($this->request, $this->method);
                 $this->data = $controller->data;
                 break;
             default:
-            $this->status = 404;
+                $this->status = 404;
                 $this->data = [
                     "status" => $this->status,
                     "content" => "No service named '" . $this->request[0] . "' found!"
                 ];
                 break;
-                
+
         }
     }
 
