@@ -7,6 +7,6 @@ class AuthController {
     public $data;
 
     function __construct($request){
-
+        
     }
 }

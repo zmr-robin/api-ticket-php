@@ -6,11 +6,15 @@ require_once __DIR__ . "/../vendor/autoload.php";
 use App\Database\Database;
 use App\Routes\Router ;
 use App\Http\JsonResponse;
+use App\Middleware\Middleware;
 
 // Load environment variables  
 use Dotenv\Dotenv;
 $dotenv = Dotenv::createImmutable(__DIR__ . "/../");
 $dotenv->load();
+
+// Ratelimit
+Middleware::rateLimit(60,25);
 
 // Connect to DB
 Database::connectDatabase($_ENV["DB"], $_ENV["DB_TABLE"], 

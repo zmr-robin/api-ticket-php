@@ -25,3 +25,10 @@ curl  -X GET \
   --header 'Accept: */*' \
   --header 'User-Agent: Thunder Client (https://www.thunderclient.com)'
 ```
+
+#### POST
+
+> Create a user
+```
+
+```
