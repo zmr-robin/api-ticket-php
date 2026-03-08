@@ -3,14 +3,21 @@
 namespace App\Middleware;
 
 use App\Database\Database;
+use App\Exceptions\Exceptions;
 use App\Http\JsonResponse;
 
 class Middleware
 {
+    public static $header; 
 
     function __construct(){}
 
-    public static function checkIfKeyIsValid($key){
+    public static function checkIfKeyIsValid(){
+        
+        // Get auth key from header
+        $key = self::getHeaderKey();
+        $key = str_replace("Bearer ", "", $key);
+
         $stmt = Database::$conn->prepare("SELECT * FROM api WHERE ID = ?");
         $stmt->execute([hash("sha256", $key)]);
         $result = $stmt->fetch();
@@ -18,14 +25,10 @@ class Middleware
             $time = strtotime($result["Date"]);
             $now = time();
             if (($now - $time) >= $result["Duration"] * 60) {
-                JsonResponse::$status = 403;
-                JsonResponse::$data = ["status" => 403, "content" => "Forbidden"];
-                JsonResponse::send();
+                Exceptions::forbidden();
             }
         } else {
-            JsonResponse::$status = 403;
-            JsonResponse::$data = ["status" => 403, "content" => "Forbidden"];
-            JsonResponse::send();
+            Exceptions::forbidden("key not found sha(" . hash("sha256", $key).") key ($key)");
         }
     }
 
@@ -44,8 +47,10 @@ class Middleware
     5:  + Admin 
 
       ============= */
-    public static function trustLevel($key, $requiredLevel)
+    public static function trustLevel($requiredLevel)
     {
+        $key = self::getHeaderKey();
+
         // Get supporter id with api key
         $stmtAPI = Database::$conn->prepare("SELECT * FROM api WHERE ID = ?;");
         $stmtAPI->execute([hash("sha256", $key)]);
@@ -61,10 +66,8 @@ class Middleware
                 $stmtRole->execute([$result["RoleID"]]);
                 $resultRole = $stmtRole->fetch();
                 // If trust level <= required level denial access 
-                if (!($resultRole["TrustLevel"] >= $requiredLevel)) {
-                    JsonResponse::$status = 403;
-                    JsonResponse::$data = ["status" => 403, "content" => "Forbidden"];
-                    JsonResponse::send();
+                if (!($resultRole["TrustLevel"] < $requiredLevel)) {
+                    Exceptions::forbidden();
                 }
             }
         }
@@ -82,9 +85,7 @@ class Middleware
             $data = json_decode(file_get_contents($file), true);
             if (time() - $data["time"] < $seconds) {
                 if ($data["count"] >= $limit) {
-                    JsonResponse::$status = 429;
-                    JsonResponse::$data = ["status" => 429, "content" => "Too Many Requests"];
-                    JsonResponse::send();
+                    Exceptions::toManyRequests();
                 } else {
                     $data["count"]++;
                     file_put_contents($file, json_encode($data));
@@ -96,4 +97,15 @@ class Middleware
         }
 
     }
+
+    private static function getHeaderKey(){
+        // Get auth key from header
+        $key = self::$header['Authorization'] ?? null;
+        if ($key == null) {
+            Exceptions::forbidden();
+        } else {
+            return $key;
+        }
+    }
+
 }

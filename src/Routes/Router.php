@@ -4,6 +4,7 @@ namespace App\Routes;
 use App\Controllers\AuthController;
 use App\Controllers\UserController;
 use App\Middleware\Middleware;
+use App\Exceptions\Exceptions;
 
 class Router
 {
@@ -46,11 +47,7 @@ class Router
                 $this->data = $controller->data;
                 break;
             default:
-                $this->status = 404;
-                $this->data = [
-                    "status" => $this->status,
-                    "content" => "No service named '" . $this->request[0] . "' found!"
-                ];
+                Exceptions::notFound();
                 break;
 
         }

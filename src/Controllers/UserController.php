@@ -23,6 +23,7 @@ class UserController{
                 $this->data = $this->methodPost();
                 break;
             case "PUT":
+                $this->data = $this->methodPut();
                 break;
             case "DELETE":
                 break;
@@ -67,10 +68,10 @@ class UserController{
             switch($this->request[1]){
                 // Get (all) data for specific user
                 case "data":
-                    return $this->usr->listUserData();
+                    return $this->usr->getUserData();
                 // Get role of user
                 case "role":
-                    break;
+                    return $this->usr->getUserRole();
                 // Get email of user
                 case "email":
                     break;
@@ -87,7 +88,19 @@ class UserController{
 
     // Update data
     private function methodPut(){
-
+        if(isset($this->request[1])){
+            switch($this->request[1]){
+                // Change user role
+                case "role":
+                    return $this->usr->setRole();
+                // Change user password
+                case "password":
+                    return $this->usr->getUserRole();
+                // Get email of user
+                case "email":
+                    break;
+            }
+        } 
     }
 
 

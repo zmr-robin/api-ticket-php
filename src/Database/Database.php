@@ -2,7 +2,7 @@
 
 namespace App\Database;
 
-use App\Http\JsonResponse;
+use App\Exceptions\Exceptions;
 use PDO;
 use PDOException;
 
@@ -16,10 +16,7 @@ class Database {
             self::$conn = new PDO("mysql:host=$db;dbname=$db_table", $db_user, $db_pass);
             self::$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch (PDOException $e) {
-            $data = ["status" => "503", "content" => "Database connection faild!" ];
-            $response = new JsonResponse($data,503);
-            $response->send();
-            exit();
+            Exceptions::serviceUnavailable();
         }
     }
 

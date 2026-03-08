@@ -14,7 +14,8 @@ The API helps to access the tickets via web-app *([php-ticket](https://github.co
 curl  -X GET \
   'http://localhost/api-ticket-php/public/users' \
   --header 'Accept: */*' \
-  --header 'User-Agent: Thunder Client (https://www.thunderclient.com)'
+  --header 'User-Agent: Thunder Client (https://www.thunderclient.com)' \
+  --header 'Authorization: Bearer {api_key}'
 ```
 
 > List data from one user by id
@@ -23,12 +24,50 @@ curl  -X GET \
 curl  -X GET \
   'http://localhost/api-ticket-php/public/users/data/1' \
   --header 'Accept: */*' \
-  --header 'User-Agent: Thunder Client (https://www.thunderclient.com)'
+  --header 'User-Agent: Thunder Client (https://www.thunderclient.com)' \
+  --header 'Authorization: Bearer {api_key}'
 ```
 
 #### POST
 
 > Create a user
+``` bash
+curl  -X POST \
+  'http://localhost/api-ticket-php/public/users/create' \
+  --header 'Accept: */*' \
+  --header 'User-Agent: Thunder Client (https://www.thunderclient.com)' \
+  --header 'Authorization: Bearer 2jtx1UeYhcotcW90KLic_BExp6_zodCqvchys4r8TyE' \
+  --header 'Content-Type: application/json' \
+  --data-raw '{
+  "Email" : "email@example.com",
+  "Password" : "password",
+  "FirstName" : "Max",
+  "LastName" : "Mustermann"
+  }'
 ```
 
+> Invite a user
+```bash
+curl  -X POST \
+  'http://localhost/api-ticket-php/public/users/invite' \
+  --header 'Accept: */*' \
+  --header 'User-Agent: Thunder Client (https://www.thunderclient.com)' \
+  --header 'Authorization: Bearer {api_key}' \
+  --header 'Content-Type: application/json' \
+  --data-raw '{"Email" : "email@example.com"}'
+```
+
+#### PUT
+
+> Change user role
+```bash
+curl  -X PUT \
+  'http://localhost/api-ticket-php/public/users/role/28' \
+  --header 'Accept: */*' \
+  --header 'User-Agent: Thunder Client (https://www.thunderclient.com)' \
+  --header 'Authorization: Bearer {api_key}' \
+  --header 'Content-Type: application/json' \
+  --data-raw '{
+  "Role" : "0"
+} 
 ```

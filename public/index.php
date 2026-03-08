@@ -15,6 +15,7 @@ $dotenv->load();
 
 // Ratelimit
 Middleware::rateLimit(60,25);
+Middleware::$header = getallheaders();
 
 // Connect to DB
 Database::connectDatabase($_ENV["DB"], $_ENV["DB_TABLE"], 
@@ -26,7 +27,7 @@ if (isset($_GET["url"])) {
     $data = $result->data ?? [];
     JsonResponse::$data = is_array($data) ? $data : ["content" => $data];
 } else {
-    JsonResponse::$data = ["message" => "Welcome!"];
+    JsonResponse::$data = ["message" => "Welcome to the php-ticket api!"];
 }
 
 JsonResponse::send();

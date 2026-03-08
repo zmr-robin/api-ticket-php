@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Database\Database;
 use App\Http\JsonResponse;
+use App\Exceptions\Exceptions;
 
 class AuthController {
 
@@ -35,19 +36,13 @@ class AuthController {
                     JsonResponse::$data = ["status" => 200, "content" => $apiKey];
                     JsonResponse::send();
                 } else {
-                    JsonResponse::$status = 401;
-                    JsonResponse::$data = ["status" => 401, "content" => "Wrong credentials"];
-                    JsonResponse::send();
+                    Exceptions::unauthorized();
                 }
             } else {
-                JsonResponse::$status = 401;
-                JsonResponse::$data = ["status" => 401, "content" => "Wrong credentials"];
-                JsonResponse::send();
+                Exceptions::unauthorized();
             }
         } else {
-            JsonResponse::$status = 400;
-            JsonResponse::$data = ["status" => 400, "content" => "Missing required arguments"];
-            JsonResponse::send();
+            Exceptions::badRequest();
         }
     }
 }

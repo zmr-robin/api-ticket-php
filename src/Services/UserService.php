@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Database\Database;
 use App\Http\JsonResponse;
 use App\Middleware\Middleware;
+use App\Exceptions\Exceptions;
 use ReflectionZendExtension;
 
 class UserService
@@ -20,6 +21,10 @@ class UserService
 
     public function listAllUser()
     {
+
+        Middleware::checkIfKeyIsValid();
+        Middleware::trustLevel(5);
+
         $stmt = Database::$conn->prepare("SELECT * FROM supporter");
         $stmt->execute();
         $result = $stmt->fetchAll();
@@ -35,8 +40,11 @@ class UserService
         return $this->data;
     }
 
-    public function listUserData()
+    public function getUserData()
     {
+        Middleware::checkIfKeyIsValid();
+        Middleware::trustLevel(5);
+
         if (isset($this->request[2])) {
             $stmt = Database::$conn->prepare("SELECT * FROM supporter WHERE ID = ?");
             $stmt->execute([$this->request[2]]);
@@ -51,15 +59,60 @@ class UserService
                 ];
                 return $data;
             } else {
-                JsonResponse::$status = 404;
-                JsonResponse::$data = ["status" => 404, "content" => "User with ID " . $this->request[2] . " not found!"];
-                JsonResponse::send();
+                Exceptions::notFound("User with ID " . $this->request[2] . " not found!");
             }
         } else {
-            JsonResponse::$status = 404;
-            JsonResponse::$data = ["status" => 404, "content" => "User not found!"];
-            JsonResponse::send();
+            Exceptions::notFound("User not found!");
         }
+    }
+
+    public function getUserRole(){
+        
+        Middleware::checkIfKeyIsValid();
+        Middleware::trustLevel(5);
+
+        if (isset($this->request[2])){
+            $result = $this->getUserData();
+            $stmt = Database::$conn->prepare("SELECT * FROM role WHERE ID = ?;");
+            $stmt->execute([$result["RoleID"]]);
+            $result = $stmt->fetch();
+            if ($result !== false){
+                $data = [
+                    "RoleID" => $result["ID"],
+                    "Role" => $result["Name"],
+                    "TrustLevel" => $result["TrustLevel"]
+                ];
+                return $data;
+            } else {
+                return $data = [
+                    "RoleID" => 0,
+                    "Role" => "NaN",
+                    "TrustLevel" => 0
+                ];
+            }
+        }
+    }
+
+    public function setRole() {
+        
+        $rawBody = file_get_contents("php://input");
+        $data = json_decode($rawBody, true); 
+
+        Middleware::checkIfKeyIsValid();
+        Middleware::trustLevel(5);
+
+        if (isset($this->request[2]) && isset($data["Role"])){
+            $stmt = Database::$conn->prepare("UPDATE supporter SET RoleID = ? WHERE ID = ?;");
+            $stmt->execute([$data["Role"], $this->request[2]]);
+            $data = [
+                "status" => 200,
+                "content" => "Changed role of user " . $this->request[2]
+            ];
+            return $data;
+        } else {
+            Exceptions::badRequest();
+        }
+
     }
 
     public function createUser()
@@ -70,34 +123,25 @@ class UserService
         if (isset($data["Email"]) && isset($data["Password"]) &&
             isset($data["FirstName"]) && isset($data["LastName"])) {
 
-            // ! TODO Whiteliste checken!!!
+            $checkWhitelist = $this->checkWhitelist($data["Email"]); 
+            if ($checkWhitelist[0] == false){
+                Exceptions::forbidden();
+            }
 
-            // Check if email is allready in use
-            $stmt = Database::$conn->prepare("SELECT * FROM Email WHERE Email = ?");
-            $stmt->execute([$data["Email"]]);
-            $result = $stmt->fetch();
-
-            if ($result !== false) {
-                JsonResponse::$status = 409;
-                JsonResponse::$data = ["status" => 409, "content" => "Email already in use!"];
-                JsonResponse::send();
+            if ($this->userEmailDuplicate($checkWhitelist[0])) {
+                Exceptions::conflict("Email already in use!");
             } else {
-                // Create email
-                $stmt = Database::$conn->prepare("INSERT INTO Email (email) VALUES (?)");
-                $stmt->execute([$data["Email"]]);
                 // Create user
                 $stmt = Database::$conn->prepare("INSERT INTO supporter 
                 (EmailID, Password, FirstName, LastName) VALUES (?, ?, ?, ?)");
-                $stmt->execute([Database::$conn->lastInsertId(), hash("sha256", $data["Password"]), $data["FirstName"], $data["LastName"]]);
+                $stmt->execute([$checkWhitelist[0] , hash("sha256", $data["Password"]), $data["FirstName"], $data["LastName"]]);
                 
                 JsonResponse::$status = 201;
                 JsonResponse::$data = ["status" => 201, "content" => "User ". Database::$conn->lastInsertId() ." created!"];
                 JsonResponse::send();
             }
         } else {
-            JsonResponse::$status = 400;
-            JsonResponse::$data = ["status" => 400, "content" => "Missing required arguments"];
-            JsonResponse::send();
+            Exceptions::badRequest("Missing required arguments");
         }
     }
 
@@ -105,30 +149,66 @@ class UserService
         $rawBody = file_get_contents("php://input");
         $data = json_decode($rawBody, true); 
 
-        Middleware::checkIfKeyIsValid($data["Key"]);
-        Middleware::trustLevel($data["Key"], 5);
+        Middleware::checkIfKeyIsValid();
+        Middleware::trustLevel(5);
 
         if (isset($data["Email"])){
             $emailID = "";
             // Check if email already exist in database
-            $stmtEmail = Database::$conn->prepare("SELECT * FROM email WHERE Email = ?;");
+            $stmtEmail = Database::$conn->prepare(query: "SELECT * FROM email WHERE Email = ?;");
             $stmtEmail->execute([$data["Email"]]);
             $result = $stmtEmail->fetch();
             if ($result !== false){
                 // Get email id 
-                $emailID = $result["EmailID"];
+                $emailID = $result["ID"];
             } else {
                 // Insert email in email
                 $stmt = Database::$conn->prepare("INSERT INTO email (Email) VALUES (?);");
                 $stmt->execute([$data["Email"]]);
             }
             $emailID = ($emailID != "") ? $emailID : Database::$conn->lastInsertId();
-            // Insert email in whitelist
-            $stmtWhiteList = Database::$conn->prepare("INSERT INTO whitelist (EmailID) VALUES (?);");
-            $stmtWhiteList->execute([$emailID]);
-            JsonResponse::$status = 200;
-            JsonResponse::$data = ["status" => 200, "content" => "Successfully added " . $data["Email"] . " to whitelist"];
-            JsonResponse::send();
+            $stmtWhiteListCheck = Database::$conn->prepare("SELECT * FROM whitelist WHERE EmailID = ?;");
+            $stmtWhiteListCheck->execute([$emailID]);
+            if (!($result !== false)){
+                // Insert email in whitelist
+                $stmtWhiteList = Database::$conn->prepare("INSERT INTO whitelist (EmailID) VALUES (?);");
+                $stmtWhiteList->execute([$emailID]);
+                JsonResponse::$status = 200;
+                JsonResponse::$data = ["status" => 200, "content" => "Successfully added " . $data["Email"] . " to whitelist"];
+                JsonResponse::send();
+            } else {
+                Exceptions::conflict();
+            }
+
+        }
+    }
+
+    private function checkWhitelist($email){
+        $stmt = Database::$conn->prepare("SELECT * FROM email WHERE Email = ?;");
+        $stmt->execute([$email]);
+        $resultEmail = $stmt->fetch();
+        if ($resultEmail !== false) {
+            $stmt = Database::$conn->prepare("SELECT * FROM whitelist WHERE EmailID = ?;");
+            $stmt->execute([$resultEmail["ID"]]);
+            $resultWhitelist = $stmt->fetch();
+            if ($resultWhitelist !== false){
+                return [$resultEmail["ID"]];
+            } else {
+                return [false];
+            }
+        } else {
+            return [false];
+        }
+    }
+
+    private function userEmailDuplicate($emailID){
+        $stmt = Database::$conn->prepare("SELECT * FROM supporter WHERE EmailID = ?;");
+        $stmt->execute([$emailID]);
+        $result = $stmt->fetch();
+        if($result !== false){
+            return true;
+        } else {
+            return false;
         }
     }
 
