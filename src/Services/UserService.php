@@ -45,9 +45,9 @@ class UserService
         Middleware::checkIfKeyIsValid();
         Middleware::trustLevel(5);
 
-        if (isset($this->request[2])) {
+        if (isset($this->request[1])) {
             $stmt = Database::$conn->prepare("SELECT * FROM supporter WHERE ID = ?");
-            $stmt->execute([$this->request[2]]);
+            $stmt->execute([$this->request[1]]);
             $result = $stmt->fetch();
             if ($result !== false) {
                 $data = [
@@ -71,7 +71,7 @@ class UserService
         Middleware::checkIfKeyIsValid();
         Middleware::trustLevel(5);
 
-        if (isset($this->request[2])){
+        if (isset($this->request[1])){
             $result = $this->getUserData();
             $stmt = Database::$conn->prepare("SELECT * FROM role WHERE ID = ?;");
             $stmt->execute([$result["RoleID"]]);
@@ -101,12 +101,13 @@ class UserService
         Middleware::checkIfKeyIsValid();
         Middleware::trustLevel(5);
 
-        if (isset($this->request[2]) && isset($data["Role"])){
+        // ! TODO If user not exist
+        if (isset($this->request[1]) && isset($data["Role"])){
             $stmt = Database::$conn->prepare("UPDATE supporter SET RoleID = ? WHERE ID = ?;");
-            $stmt->execute([$data["Role"], $this->request[2]]);
+            $stmt->execute([$data["Role"], $this->request[1]]);
             $data = [
                 "status" => 200,
-                "content" => "Changed role of user " . $this->request[2]
+                "content" => "Changed role of user " . $this->request[1]
             ];
             return $data;
         } else {

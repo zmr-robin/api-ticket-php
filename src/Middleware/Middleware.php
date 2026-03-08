@@ -28,7 +28,7 @@ class Middleware
                 Exceptions::forbidden();
             }
         } else {
-            Exceptions::forbidden("key not found sha(" . hash("sha256", $key).") key ($key)");
+            Exceptions::forbidden();
         }
     }
 
@@ -50,6 +50,7 @@ class Middleware
     public static function trustLevel($requiredLevel)
     {
         $key = self::getHeaderKey();
+        $key = str_replace("Bearer ", "", $key);
 
         // Get supporter id with api key
         $stmtAPI = Database::$conn->prepare("SELECT * FROM api WHERE ID = ?;");
@@ -66,10 +67,14 @@ class Middleware
                 $stmtRole->execute([$result["RoleID"]]);
                 $resultRole = $stmtRole->fetch();
                 // If trust level <= required level denial access 
-                if (!($resultRole["TrustLevel"] < $requiredLevel)) {
+                if ($resultRole["TrustLevel"] < $requiredLevel) {
                     Exceptions::forbidden();
                 }
+            } else {
+                Exceptions::forbidden();
             }
+        } else {
+            Exceptions::forbidden();
         }
     }
 

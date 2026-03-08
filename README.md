@@ -71,3 +71,20 @@ curl  -X PUT \
   "Role" : "0"
 } 
 ```
+
+### Auth
+
+#### Get
+
+> Get new API Key
+``` bash
+curl  -X GET \
+  'http://localhost/api-ticket-php/public/auth' \
+  --header 'Accept: */*' \
+  --header 'User-Agent: Thunder Client (https://www.thunderclient.com)' \
+  --header 'Content-Type: application/json' \
+  --data-raw '{
+  "Email" : "email@email.com",
+  "Password" : "password"
+}'
+```
