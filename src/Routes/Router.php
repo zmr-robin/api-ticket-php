@@ -3,6 +3,7 @@
 namespace App\Routes;
 use App\Controllers\AuthController;
 use App\Controllers\UserController;
+use App\Middleware\Middleware;
 
 class Router
 {

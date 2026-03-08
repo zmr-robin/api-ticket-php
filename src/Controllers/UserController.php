@@ -39,6 +39,8 @@ class UserController{
                 // Get (all) data for specific user
                 case "create":
                     return $this->usr->createUser();
+                case "invite":
+                    $this->usr->inviteUser();
                 // Get role of user
                 case "role":
                     break;

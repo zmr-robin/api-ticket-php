@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Database\Database;
 use App\Http\JsonResponse;
+use App\Middleware\Middleware;
 use ReflectionZendExtension;
 
 class UserService
@@ -69,6 +70,8 @@ class UserService
         if (isset($data["Email"]) && isset($data["Password"]) &&
             isset($data["FirstName"]) && isset($data["LastName"])) {
 
+            // ! TODO Whiteliste checken!!!
+
             // Check if email is allready in use
             $stmt = Database::$conn->prepare("SELECT * FROM Email WHERE Email = ?");
             $stmt->execute([$data["Email"]]);
@@ -93,7 +96,38 @@ class UserService
             }
         } else {
             JsonResponse::$status = 400;
-            JsonResponse::$data = ["status" => 400, "content" => "Missing required fields"];
+            JsonResponse::$data = ["status" => 400, "content" => "Missing required arguments"];
+            JsonResponse::send();
+        }
+    }
+
+    public function inviteUser(){
+        $rawBody = file_get_contents("php://input");
+        $data = json_decode($rawBody, true); 
+
+        Middleware::checkIfKeyIsValid($data["Key"]);
+        Middleware::trustLevel($data["Key"], 5);
+
+        if (isset($data["Email"])){
+            $emailID = "";
+            // Check if email already exist in database
+            $stmtEmail = Database::$conn->prepare("SELECT * FROM email WHERE Email = ?;");
+            $stmtEmail->execute([$data["Email"]]);
+            $result = $stmtEmail->fetch();
+            if ($result !== false){
+                // Get email id 
+                $emailID = $result["EmailID"];
+            } else {
+                // Insert email in email
+                $stmt = Database::$conn->prepare("INSERT INTO email (Email) VALUES (?);");
+                $stmt->execute([$data["Email"]]);
+            }
+            $emailID = ($emailID != "") ? $emailID : Database::$conn->lastInsertId();
+            // Insert email in whitelist
+            $stmtWhiteList = Database::$conn->prepare("INSERT INTO whitelist (EmailID) VALUES (?);");
+            $stmtWhiteList->execute([$emailID]);
+            JsonResponse::$status = 200;
+            JsonResponse::$data = ["status" => 200, "content" => "Successfully added " . $data["Email"] . " to whitelist"];
             JsonResponse::send();
         }
     }
