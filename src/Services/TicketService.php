@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Database\Database;
+
 class TicketService {
 
     private $request;
@@ -13,7 +15,20 @@ class TicketService {
 
     //* Get all tickets
     public function get(){
-
+        // Get all tickets with state = 1 (open tickets)
+        $stmt = Database::$conn->prepare("SELECT * FROM ticket WHERE state = 1;");
+        $stmt->execute();
+        $result = $stmt->fetchAll();
+        $data = [];
+        foreach($result as $item){
+            array_push($data, [
+                "ID" => $item["ID"],
+                "EmailID" => $item["EmailID"],
+                "Subject" => $item["Subject"],
+                "Date" => $item["Date"]
+            ]);
+        }
+        return $data;
     } 
 
     //* Get all archived tickets
@@ -68,7 +83,7 @@ class TicketService {
 
     //* Delete ticket
     public function delete(){
-        
+
     }
 
 }

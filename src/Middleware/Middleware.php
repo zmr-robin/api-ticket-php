@@ -24,7 +24,7 @@ class Middleware
         if ($result !== false) {
             $time = strtotime($result["Date"]);
             $now = time();
-            if (($now - $time) >= $result["Duration"] * 60) {
+            if (($now - $time) >= $result["Duration"] * 60 && $result["Duration"] != 0) {
                 Exceptions::forbidden();
             }
         } else {

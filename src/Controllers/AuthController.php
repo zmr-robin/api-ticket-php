@@ -2,47 +2,103 @@
 
 namespace App\Controllers;
 
-use App\Database\Database;
-use App\Http\JsonResponse;
 use App\Exceptions\Exceptions;
+use App\Services\AuthService;
 
 class AuthController {
 
     public $data;
+    private $request;
+    private $auth;
+    private $method;
 
-    function __construct($request){
-        $rawBody = file_get_contents("php://input");
-        $data = json_decode($rawBody, true); 
-        if (isset($data["Email"]) && isset($data["Password"])) {
-            $stmtEmail = Database::$conn->prepare("SELECT * FROM email WHERE Email = ?;");
-            $stmtEmail->execute([$data["Email"]]);
-            $resultEmail = $stmtEmail->fetch();
-            // If email exist 
-            if ($resultEmail !== false ){
-                $stmt = Database::$conn->prepare("SELECT * FROM supporter WHERE EmailID = ? AND Password = ?;");
-                $stmt->execute([$resultEmail["ID"], hash("sha256", $data["Password"])]);
-                $result = $stmt->fetch();
-                // If user with same credentials exist
-                if ($result !== false) {
-                    // Delete old api key of the user
-                    $stmtDeleteKey = Database::$conn->prepare("DELETE FROM api WHERE SupporterID = ?;");
-                    $stmtDeleteKey->execute([$result["ID"]]);
-                    // Create new API-Key
-                    $stmtKey = Database::$conn->prepare("INSERT INTO api (ID, SupporterID, Duration) VALUES (?,?,?)");
-                    $apiKey = base64_encode(random_bytes(32));
-                    $apiKey = str_replace(['+', '/', '='], ['-', '_', ''], $apiKey);
-                    $stmtKey->execute([hash("sha256", $apiKey), $result["ID"], 30]);
-                    JsonResponse::$status = 200;
-                    JsonResponse::$data = ["status" => 200, "content" => $apiKey];
-                    JsonResponse::send();
-                } else {
-                    Exceptions::unauthorized();
-                }
-            } else {
-                Exceptions::unauthorized();
+    function __construct($request, $method){
+        
+        $this->request = $request;
+        $this->method = $method;
+        $this->auth = new AuthService($request);
+
+        switch($this->method){
+            case "GET":
+                $this->data = $this->methodGet();
+                break;
+            case "POST":
+                $this->data = $this->methodPost();
+                break;
+            case "PUT":
+                $this->data = $this->methodPut();
+                break;
+            case "DELETE":
+                $this->data = $this->methodDelete();
+                break;
+            default:
+                break; // ! TODO ERROR
+        }
+
+    }
+
+    /* =================
+    
+    GET 
+        ! All keys:             /auth/
+        ! Key Data:             /auth/{ID}/data
+        
+      =================*/
+    private function methodGet(){
+
+    }
+
+    /* =================
+    
+    Post 
+        ! Auth user             /auth/
+        ! Auth for ID           /auth/users/{UserID}/
+        
+      =================*/
+    private function methodPost(){
+        if (isset($this->request[1]) && isset($this->request[2])){
+            return $this->auth->authByID();
+        } else {
+            return $this->auth->auth();
+        }
+    }
+
+    /* =================
+    
+    Put 
+        ! Auth change duration  /auth/{ID}/duration
+        
+      =================*/
+    private function methodPut(){
+        if(isset($this->request[1]) && isset($this->request[2])){
+            if ($this->request[2] == "duration"){
+                return $this->auth->duration();
             }
         } else {
-            Exceptions::badRequest();
+            Exceptions::notFound();
+        }
+    }
+
+    /* =================
+    
+    Delete 
+        ! Delete auth key       /auth/{ID}/delete
+        ! Delete auth key by id /auth/users/{UserID}/delete
+        
+      =================*/
+    private function methodDelete(){
+        if(isset($this->request[1])){
+            if ($this->request[1] == "users" ){
+                if(isset($this->request[2]) && $this->request[2] == "delete"){
+                    $this->auth->deleteUser();
+                } else {
+                    Exceptions::notFound();
+                }
+            } else {
+                $this->auth->delete();
+            }
+        } else {
+            Exceptions::notFound();
         }
     }
 }

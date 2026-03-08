@@ -39,16 +39,16 @@ class TicketController {
     /* =================
     
     GET 
-        !List all tickets:  /ticket/
+        !List all tickets:  /tickets/
     
     Filter
-        !Tag:        /ticket/tag/{Tag}
-        !Archived:   /ticket/archive/
+        !Tag:        /tickets/tag/{Tag}
+        !Archived:   /tickets/archive/
         
     By ticket id
-        !Data:       /ticket/{TicketID}
-        !Messages:   /ticket/{TicketID}/messages
-        !Archived:   /ticket/{TicketID}/archive
+        !Data:       /tickets/{TicketID}
+        !Messages:   /tickets/{TicketID}/messages
+        !Archived:   /tickets/{TicketID}/archive
         
       =================*/
     private function methodGet() {
@@ -80,11 +80,11 @@ class TicketController {
     /* =================
     
     Create 
-        !New ticket:     /ticket/
+        !New ticket:     /tickets/
 
     Add to ticket
-        !New Message:    /ticket/{id}/message
-        !New Tag:        /ticket/{id}/tag
+        !New Message:    /tickets/{id}/message
+        !New Tag:        /tickets/{id}/tag
         
       =================*/
 
@@ -109,7 +109,7 @@ class TicketController {
     /* =================
     
     Update 
-        !Archive Ticket:  /ticket/{id}/archive
+        !Archive Ticket:  /tickets/{id}/archive
 
       =================*/
 
@@ -129,8 +129,8 @@ class TicketController {
     /* =================
     
     Delete 
-        !Ticket Tag:        /ticket/{id}/tag
-        !Ticket:            /ticket/{id}  
+        !Ticket Tag:        /tickets/{id}/tag
+        !Ticket:            /tickets/{id}  
 
       =================*/
     private function methodDelete(){
