@@ -61,7 +61,9 @@ class UserController{
         All data:       /users/{id}/
         Role of user:   /users/{id}/role/
 
-        !TODO Email of user:  /users/email/{id}
+        !TODO Email of user:  /users/{id}/email/
+        !TODO Auth of user:   /users/{id}/auth/
+        !TODO Level of user:  /users/{id}/level/
         
       =================*/
     private function methodGet(){

@@ -36,13 +36,13 @@ class Exceptions
         JsonResponse::send();
     }
 
-    public static function toManyRequests($content = "Too Many Requests"){
+    public static function toManyRequests($content = "Too many requests"){
         JsonResponse::$status = 429;
         JsonResponse::$data = ["status" => 429, "content" => $content];
         JsonResponse::send();
     }
 
-    public static function serviceUnavailable($content = "Service Unavailable"){
+    public static function serviceUnavailable($content = "Service unavailable"){
         JsonResponse::$status = 503;
         JsonResponse::$data = ["status" => 429, "content" => $content];
         JsonResponse::send();

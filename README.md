@@ -3,90 +3,26 @@
 
 The API helps to access the tickets via web-app *([php-ticket](https://github.com/zmr-robin))* and the dektop client *([php-ticket-client](https://github.com/zmr-robin))*.
 
-## Doc
+## Endpoints
 
-### Users
+| Endpoint                                  | Funktion            |
+|-------------------------------------------|---------------------|
+| [/users/](./docs/Endpoints/users.md)      | Supporter Accounts  |
+| [/emails/](./docs/Endpoints/emails.md)    | Emails              |
+| [/auth/](./docs/Endpoints/auth.md)        | Authentification    |
+| [/tickets/](./docs/Endpoints/tickets.md)  | Tickets             |
+| [/tags/](./docs/Endpoints/tags.md)        | Tags                |
+| [/roles/](./docs/Endpoints/roles.md)      | Roles               |
 
-#### GET
 
-> List **all** users 
-```bash
-curl  -X GET \
-  'http://localhost/api-ticket-php/public/users' \
-  --header 'Accept: */*' \
-  --header 'User-Agent: Thunder Client (https://www.thunderclient.com)' \
-  --header 'Authorization: Bearer {api_key}'
-```
+## Response status
 
-> List data from one user by id
-
-```bash
-curl  -X GET \
-  'http://localhost/api-ticket-php/public/users/data/1' \
-  --header 'Accept: */*' \
-  --header 'User-Agent: Thunder Client (https://www.thunderclient.com)' \
-  --header 'Authorization: Bearer {api_key}'
-```
-
-#### POST
-
-> Create a user
-``` bash
-curl  -X POST \
-  'http://localhost/api-ticket-php/public/users/create' \
-  --header 'Accept: */*' \
-  --header 'User-Agent: Thunder Client (https://www.thunderclient.com)' \
-  --header 'Authorization: Bearer 2jtx1UeYhcotcW90KLic_BExp6_zodCqvchys4r8TyE' \
-  --header 'Content-Type: application/json' \
-  --data-raw '{
-  "Email" : "email@example.com",
-  "Password" : "password",
-  "FirstName" : "Max",
-  "LastName" : "Mustermann"
-  }'
-```
-
-> Invite a user
-```bash
-curl  -X POST \
-  'http://localhost/api-ticket-php/public/users/invite' \
-  --header 'Accept: */*' \
-  --header 'User-Agent: Thunder Client (https://www.thunderclient.com)' \
-  --header 'Authorization: Bearer {api_key}' \
-  --header 'Content-Type: application/json' \
-  --data-raw '{"Email" : "email@example.com"}'
-```
-
-#### PUT
-
-> Change user role
-```bash
-curl  -X PUT \
-  'http://localhost/api-ticket-php/public/users/role/28' \
-  --header 'Accept: */*' \
-  --header 'User-Agent: Thunder Client (https://www.thunderclient.com)' \
-  --header 'Authorization: Bearer {api_key}' \
-  --header 'Content-Type: application/json' \
-  --data-raw '{
-  "Role" : "0"
-} 
-```
-
-### Auth
-
-#### Get
-
-> Get new API Key
-``` bash
-curl  -X GET \
-  'http://localhost/api-ticket-php/public/auth' \
-  --header 'Accept: */*' \
-  --header 'User-Agent: Thunder Client (https://www.thunderclient.com)' \
-  --header 'Content-Type: application/json' \
-  --data-raw '{
-  "Email" : "email@email.com",
-  "Password" : "password"
-}'
-```
-
-##
+| Status  | Meaning                         |
+|---------|---------------------------------|
+| 400     | Bad Request                     |         
+| 401     | Unauthorized: API Key invalid   |
+| 403     | Forbidden: Trust level to low   |
+| 404     | Service not found               |
+| 409     | Conflict: Data already exist    |
+| 429     | To many requests                |
+| 503     | Service unavailable             |

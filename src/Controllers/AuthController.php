@@ -52,13 +52,10 @@ class AuthController {
     
     Post 
         ! Auth user             /auth/
-        ! Auth for ID           /auth/users/{UserID}/
-        
+
       =================*/
     private function methodPost(){
-        if (isset($this->request[1]) && isset($this->request[2])){
-            return $this->auth->authByID();
-        } else {
+        if (isset($this->request[1])){
             return $this->auth->auth();
         }
     }
@@ -83,7 +80,6 @@ class AuthController {
     
     Delete 
         ! Delete auth key       /auth/{ID}/delete
-        ! Delete auth key by id /auth/users/{UserID}/delete
         
       =================*/
     private function methodDelete(){
