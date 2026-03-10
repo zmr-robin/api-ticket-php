@@ -16,12 +16,36 @@ class AuthService
 
     //* Get all keys
     public function get(){
-
+        $stmt = Database::$conn->prepare("SELECT * FROM api;");
+        $stmt->execute();
+        $result = $stmt->fetchAll();
+        $data = [];
+        foreach($result as $item){
+            array_push($data, [
+                "ID" => $item["ID"],
+                "SupporterID" => $item["SupporterID"],
+                "Date" => $item["Date"],
+                "Duration" => $item["Duration"]
+            ]);
+        }
+        return $data;
     }
 
     //*  Get data of one key
     public function getData(){
-        
+        $stmt = Database::$conn->prepare("SELECT * FROM api WHERE ID = ?;");
+        $stmt->execute([$this->request[1]]);
+        $result = $stmt->fetch();
+        if($result != false){
+            return [
+                "ID" => $result["ID"],
+                "SupporterID" => $result["SupporterID"],
+                "Date" => $result["Date"],
+                "Duration" => $result["Duration"]
+            ];
+        } else {
+            Exceptions::notFound("Key not found!");
+        }
     }
 
     //* Auth for ID

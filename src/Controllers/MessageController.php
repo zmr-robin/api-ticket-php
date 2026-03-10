@@ -14,7 +14,7 @@ class MessageController{
     function __construct($request, $method){
         
         $this->request = $request;
-        $this->message = new MessageService($request);
+        $this->message = new MessageService($this->request);
         $this->method = $method;
         
         switch($this->method){
@@ -41,8 +41,6 @@ class MessageController{
     GET 
         !All messages:              /messages/
         !Message Data:              /messages/{ID}/data
-    Filter
-        !All messages by Ticket     /messages/{TicketID}/ticket
 
       =================*/
 
@@ -62,12 +60,12 @@ class MessageController{
     /* =================
     
     Post 
-        !New message:               /messages/{TicketID}/send
+        !New message:               /messages/
         
       =================*/
 
     private function methodPost(){
-        if (isset($this->request[2]) && $this->request[2] == "send"){
+        if (isset($this->request[1])){
             return $this->message->send();
         } else {
             Exceptions::notFound();
@@ -77,12 +75,12 @@ class MessageController{
     /* =================
     
     Update 
-        !Edit Message:               /messages/{MessageID}/edit
+        !Edit Message:               /messages/{MessageID}/
         
       =================*/
 
     private function methodPut(){
-        if (isset($this->request[2]) && $this->request[2] == "edit"){
+        if (isset($this->request[1]) && count($this->request) = 2){
             return $this->message->edit();
         } else {
             Exceptions::notFound();
@@ -92,11 +90,11 @@ class MessageController{
     /* =================
     
     Delete 
-        !Delete Message:            /messages/{MessageID}/delete
+        !Delete Message:            /messages/{MessageID}/
       =================*/
 
     private function methodDelete(){
-        if (isset($this->request[2]) && $this->request[2] == "delete"){
+        if (isset($this->request[1]) && count($this->request) = 2){
             return $this->message->delete();
         } else {
             Exceptions::notFound();

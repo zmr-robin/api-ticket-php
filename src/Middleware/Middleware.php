@@ -103,7 +103,7 @@ class Middleware
 
     }
 
-    private static function getHeaderKey(){
+    static function getHeaderKey(){
         // Get auth key from header
         $key = self::$header['Authorization'] ?? null;
         if ($key == null) {

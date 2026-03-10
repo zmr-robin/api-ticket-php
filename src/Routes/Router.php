@@ -6,6 +6,7 @@ use App\Controllers\TicketController;
 use App\Controllers\UserController;
 use App\Controllers\RoleController;
 use App\Controllers\EmailController;
+use App\Controllers\MessageController;
 use App\Middleware\Middleware;
 use App\Exceptions\Exceptions;
 
@@ -34,7 +35,8 @@ class Router
                 $this->data = $controller->data;
                 break;
             case "messages":
-                $this->data = ["status" => 501, "content" => "Message service coming soon"];
+                $controller = new MessageController($this->request, $this->method);
+                $this->data = $controller->data;
                 break;
             case "roles":
                 $controller = new RoleController($this->request, $this->method);
