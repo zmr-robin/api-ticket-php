@@ -18,12 +18,15 @@
 | [/emails/]()                  | Create new email
 | [/emails/{id}/whitelist]      | Whitelist a email {id}
 | [/emails/{id}/blacklist]      | Blacklist a email {id}
+| [/emails/{id}/update/{TicketID}/] | Send update to email {id} of ticket {ticketid}
 
 ### DELETE
 
 | Function      | Description |
 |---------------|-------------|
 | [/emails/{id}]()              | Delete email
+| [/emails/{id}/whitelist]      | Remove a email {id} from whitelist 
+| [/emails/{id}/blacklist]      | Remove a email {id} from blacklist
 
 ### UPDATE
 

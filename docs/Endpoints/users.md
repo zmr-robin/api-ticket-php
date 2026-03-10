@@ -12,6 +12,7 @@
 | [/users/{id}/email]()     | Get email of user {id}
 | [/users/{id}/auth]()      | Get auth key of user (sha256)
 | [/users/{id}/level]()     | Get trust level of user 
+| [/users/{id}/archive]()   | Get tickets user archived 
 
 ### POST
 

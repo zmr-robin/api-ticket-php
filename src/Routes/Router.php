@@ -4,6 +4,8 @@ namespace App\Routes;
 use App\Controllers\AuthController;
 use App\Controllers\TicketController;
 use App\Controllers\UserController;
+use App\Controllers\RoleController;
+use App\Controllers\EmailController;
 use App\Middleware\Middleware;
 use App\Exceptions\Exceptions;
 
@@ -31,13 +33,18 @@ class Router
                 $controller = new AuthController($this->request, $this->method);
                 $this->data = $controller->data;
                 break;
-            case "message":
+            case "messages":
                 $this->data = ["status" => 501, "content" => "Message service coming soon"];
                 break;
-            case "role":
-                $this->data = ["status" => 501, "content" => "Role service coming soon"];
+            case "roles":
+                $controller = new RoleController($this->request, $this->method);
+                $this->data = $controller->data;
                 break;
-            case "tag":
+            case "emails":
+                $controller = new EmailController($this->request, $this->method);
+                $this->data = $controller->data;
+                break;
+            case "tags":
                 $this->data = ["status" => 501, "content" => "Tag service coming soon"];
                 break;
             case "tickets":

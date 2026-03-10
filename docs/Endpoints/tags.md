@@ -1,12 +1,30 @@
-# Tickets Endpoint
+# Tags Endpoint
 
-## Function 
+## Functions
 
 ### GET
 
 | Function      | Description |
 |---------------|-------------|
-| [/tickets/]()                 | Get all (open) tickets 
-| [/tickets/{id}]()             | Get ticket {id} data
-| [/tickets/{id}/email]()       | Get email of ticket {id} creator
-| [/tickets/{id}/tags]()        | Get tags of ticket {id} ticket
+| [/tags/]()                    | Get all tags
+| [/tags/{id}]() |              | Get tag {id} data
+
+### POST
+
+| Function      | Description |
+|---------------|-------------|
+| [/tags/]()                    | Create a new tag
+
+### UPDATE
+
+| Function      | Description |
+|---------------|-------------|
+| [/tags/{id}/role]()                       | Change role relation
+| [/tags/{id}/description]()                | Update tag description
+| [/tags/{id}/name]()                       | Change tag name
+
+### DELETE
+
+| Function      | Description |
+|---------------|-------------|
+| [/tags/{id}/]()                           | Delete ticket

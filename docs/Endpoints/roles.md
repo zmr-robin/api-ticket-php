@@ -22,3 +22,9 @@
 |---------------|-------------|
 | [/roles/{id}/level]()       | Change role trust level
 | [/roles/{id}/name]()        | Change role name
+
+### DELETE
+
+| Function      | Description |
+|---------------|-------------|
+| [/roles/{id}]()               | Get role {id} data 
