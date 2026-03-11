@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Routes;
+use App\Controllers\ArchiveController;
 use App\Controllers\AuthController;
 use App\Controllers\TicketController;
 use App\Controllers\UserController;
@@ -55,6 +56,10 @@ class Router
                 break;
             case "users":
                 $controller = new UserController($this->request, $this->method);
+                $this->data = $controller->data;
+                break;
+            case "archive":
+                $controller = new ArchiveController($this->request, $this->method);
                 $this->data = $controller->data;
                 break;
             default:
