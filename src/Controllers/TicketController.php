@@ -41,35 +41,28 @@ class TicketController {
     GET 
         !List all tickets:  /tickets/
     
-    Filter
-        !Tag:        /tickets/tag/{Tag}
-        !Archived:   /tickets/archive/
-        
     By ticket id
         !Data:       /tickets/{TicketID}
+        !Email:      /tickets/{TicketID}/email
+        !Tag:        /tickets/{TicketID}/tags
         !Messages:   /tickets/{TicketID}/messages
-        !Archived:   /tickets/{TicketID}/archive
         
       =================*/
     private function methodGet() {
         if(isset($this->request[1])){
-            switch($this->request[1]){
-                // Get tickets by tag
-                case "tag":
-                    return $this->ticket->getByTag();
-                case "archive":
-                    return $this->ticket->getArchive();
-                default:
-                    if (isset($this->request[2])){
-                        switch($this->request[2]){
-                            case "messages":
-                                return $this->ticket->getMessages();
-                            case "archive":
-                                return $this->ticket->getArchiveData();
-                        }
-                    } else {
-                        return $this->ticket->getData();
-                    }
+            if(isset($this->request[2])){
+                switch($this->request[2]){
+                    case "email":
+                        return $this->ticket->getEmail();
+                    case "tags":
+                        return $this->ticket->getTags();
+                    case "messages":
+                        return $this->ticket->getMessages();
+                    default:
+                        Exceptions::notFound();
+                }
+            } else {
+                return $this->ticket->getData();
             }
         } else {
             return $this->ticket->get();
@@ -81,28 +74,11 @@ class TicketController {
     
     Create 
         !New ticket:     /tickets/
-
-    Add to ticket
-        !New Message:    /tickets/{id}/message
-        !New Tag:        /tickets/{id}/tag
         
       =================*/
 
     private function methodPost(){
-        if(isset($this->request[1])){
-            if(isset($this->request[2])){
-                switch($this->request[2]){
-                    case "message":
-                        return $this->ticket->message();
-                    case "tag":
-                        return $this->ticket->addTag();
-                }
-            } else {
-                Exceptions::notFound();
-            }
-        } else {
-            return $this->ticket->create();
-        }
+        return $this->ticket->create();
     }
 
 
@@ -129,17 +105,14 @@ class TicketController {
     /* =================
     
     Delete 
-        !Ticket Tag:        /tickets/{id}/tag
         !Ticket:            /tickets/{id}  
 
       =================*/
     private function methodDelete(){
-        if(isset($this->request[1]) && isset($this->request[2])){
-            return $this->ticket->detachTag();
-        } else if (isset($this->request[1])){
+        if (isset($this->request[1])){
             return $this->ticket->delete();
         } else {
-            Exceptions::notFound();
+            Exceptions::badRequest();
         }
     }
 

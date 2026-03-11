@@ -37,7 +37,7 @@ class MessageService {
     //* Get message data
     public function getData(){
         $stmt = Database::$conn->prepare("SELECT * FROM messages WHERE ID = ?;");
-        $stmt->execute($this->request[1]);
+        $stmt->execute([$this->request[1]]);
         $result = $stmt->fetch();
         if($result !== false){
             return [
@@ -89,12 +89,12 @@ class MessageService {
 
     //* Edit message
     public function edit(){
-        
+        Exceptions::badRequest("Service coming soon..."); // ! TODO
     }
 
     //* Delete message
     public function delete(){
-        
+        Exceptions::badRequest("Service coming soon..."); // ! TODO
     }
 
 }

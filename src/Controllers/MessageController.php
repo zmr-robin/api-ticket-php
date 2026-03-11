@@ -39,19 +39,14 @@ class MessageController{
     /* =================
     
     GET 
-        !All messages:              /messages/
-        !Message Data:              /messages/{ID}/data
+        All messages:              /messages/
+        Message Data:              /messages/{ID}/
 
       =================*/
 
     private function methodGet(){
-        if(isset($this->request[1]) && isset($this->request[2])){
-            switch($this->request[2]){
-                case "data":
-                    return $this->message->getData();
-                case "ticket":
-                    return $this->message->getTicket();
-            }
+        if(isset($this->request[1])){
+            return $this->message->getData();
         } else {
             return $this->message->get();
         }
@@ -60,12 +55,12 @@ class MessageController{
     /* =================
     
     Post 
-        !New message:               /messages/
+        New message:               /messages/
         
       =================*/
 
     private function methodPost(){
-        if (isset($this->request[1])){
+        if (!isset($this->request[1])){
             return $this->message->send();
         } else {
             Exceptions::notFound();
@@ -80,7 +75,7 @@ class MessageController{
       =================*/
 
     private function methodPut(){
-        if (isset($this->request[1]) && count($this->request) = 2){
+        if (isset($this->request[1]) && count($this->request) == 2){
             return $this->message->edit();
         } else {
             Exceptions::notFound();
@@ -94,7 +89,7 @@ class MessageController{
       =================*/
 
     private function methodDelete(){
-        if (isset($this->request[1]) && count($this->request) = 2){
+        if (isset($this->request[1]) && count($this->request) == 2){
             return $this->message->delete();
         } else {
             Exceptions::notFound();
