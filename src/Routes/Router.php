@@ -3,6 +3,7 @@
 namespace App\Routes;
 use App\Controllers\ArchiveController;
 use App\Controllers\AuthController;
+use App\Controllers\TagController;
 use App\Controllers\TicketController;
 use App\Controllers\UserController;
 use App\Controllers\RoleController;
@@ -48,7 +49,8 @@ class Router
                 $this->data = $controller->data;
                 break;
             case "tags":
-                $this->data = ["status" => 501, "content" => "Tag service coming soon"];
+                $controller = new TagController($this->request, $this->method);
+                $this->data = $controller->data;
                 break;
             case "tickets":
                 $controller = new TicketController($this->request, $this->method);
