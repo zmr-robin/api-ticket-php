@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 use App\Services\UserService;
+use App\Exceptions\Exceptions;
 
 class UserController{
     public $data;
@@ -26,6 +27,7 @@ class UserController{
                 $this->data = $this->methodPut();
                 break;
             case "DELETE":
+                $this->data = $this->methodDelete();
                 break;
             default:
                 break; // ! TODO ERROR
@@ -37,7 +39,7 @@ class UserController{
     
     Post Data 
         create:  /users/create
-        invite: /users/invite
+        invite: /users/invite // ! TODO Email notify
         
       =================*/
     private function methodPost(){
@@ -45,9 +47,11 @@ class UserController{
             switch($this->request[1]){
                 // Get (all) data for specific user
                 case "create":
-                    return $this->usr->createUser();
+                    return $this->usr->create();
                 case "invite":
-                    $this->usr->inviteUser();
+                    $this->usr->invite();
+                default:
+                    Exceptions::badRequest();
             }
         }
     }
@@ -70,24 +74,35 @@ class UserController{
         if(isset($this->request[1])){
             if (isset($this->request[2])){
                 switch($this->request[2]){
-                    // Get role of user
                     case "role":
-                        return $this->usr->getUserRole();
-                    // Get email of user
+                        return $this->usr->getRole();
                     case "email":
-                        break;
+                        return $this->usr->getEmail();
+                    case "level":
+                        return $this->usr->getLevel();
+                    case "auth":
+                        return $this->usr->getAuth();
+                    default: 
+                        Exceptions::notFound();
                 }
             } else {
-                return $this->usr->getUserData();
+                return $this->usr->getData();
             }
         } else {
-            return $this->usr->listAllUser();
+            return $this->usr->get();
         }
     }
 
-    // Delete data
-    private function methodDelete(){
+    /* =================
+    
+    Delete Data 
+        User:  /users/{id}/
 
+    =================*/
+    private function methodDelete(){
+        if(isset($this->request[1])){
+            return $this->usr->delete();
+        }
     }
 
     /* =================

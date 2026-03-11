@@ -19,7 +19,9 @@ class UserService
         $this->request = $request;
     }
 
-    public function listAllUser()
+
+    //* Get allllllll users
+    public function get()
     {
 
         Middleware::checkIfKeyIsValid();
@@ -40,7 +42,8 @@ class UserService
         return $this->data;
     }
 
-    public function getUserData()
+    //* Get data of user {id}
+    public function getData()
     {
         Middleware::checkIfKeyIsValid();
         Middleware::trustLevel(5);
@@ -59,20 +62,21 @@ class UserService
                 ];
                 return $data;
             } else {
-                Exceptions::notFound("User with ID " . $this->request[2] . " not found!");
+                Exceptions::notFound("User with ID " . $this->request[1] . " not found!");
             }
         } else {
             Exceptions::notFound("User not found!");
         }
     }
 
-    public function getUserRole(){
+    //* Get role of user {id}
+    public function getRole(){
         
         Middleware::checkIfKeyIsValid();
         Middleware::trustLevel(5);
 
         if (isset($this->request[1])){
-            $result = $this->getUserData();
+            $result = $this->getData();
             $stmt = Database::$conn->prepare("SELECT * FROM role WHERE ID = ?;");
             $stmt->execute([$result["RoleID"]]);
             $result = $stmt->fetch();
@@ -90,6 +94,56 @@ class UserService
                     "TrustLevel" => 0
                 ];
             }
+        }
+    }
+
+    //* Get email of user {id}
+    public function getEmail(){
+        $userDate = $this->getData();
+        $stmt = Database::$conn->prepare("SELECT * FROM email WHERE ID = ?;");
+        $stmt->execute([$userDate["EmailID"]]);
+        $result = $stmt->fetch();
+        if ($result !== false){
+            return [
+                "EmailID" => $result["ID"],
+                "Email" => $result["Email"]
+            ];
+        } else {
+            Exceptions::notFound("Email not found!");
+        }
+
+    }
+
+    //* Get auth of user {id}
+    public function getAuth(){
+        $userData = $this->getData();
+        $stmt = Database::$conn->prepare("SELECT * FROM api WHERE SupporterID = ?;");
+        $stmt->execute([$userData["UserID"]]);
+        $result = $stmt->fetch();
+        if($result !== false){
+            return [
+                "Key" => $result["ID"],
+                "SupporterID" => $result["SupporterID"],
+                "Date" => $result["Date"],
+                "Duration" => $result["Duration"] 
+            ];
+        } else {
+            return [];
+        }
+    }
+
+    //* Get trust level of user {id}
+    public function getLevel(){
+        $userData = $this->getData();
+        $stmt = Database::$conn->prepare("SELECT * FROM role WHERE ID = ?;");
+        $stmt->execute([$userData["RoleID"]]);
+        $result = $stmt->fetch();
+        if ($result !== false) {
+            return ["TrustLevel" => $result["TrustLevel"]];
+        } else if ($userData["RoleID"] == 0) {
+            return ["TrustLevel" => 0];
+        } else {
+            Exceptions::notFound("Role not found!");
         }
     }
 
@@ -116,7 +170,20 @@ class UserService
 
     }
 
-    public function createUser()
+    //* Delete user {id}
+    public function delete(){
+        $stmt = Database::$conn->prepare("SELECT * FROM supporter WHERE ID = ?;");
+        $stmt->execute([$this->request[1]]);
+        $result = $stmt->fetch();
+        if($result !== false) {
+            $stmt = Database::$conn->prepare("DELETE FROM supporter WHERE ID = ?;");
+            $stmt->execute([$this->request[1]]);
+        } else {
+            Exceptions::notFound("User not found!");
+        }
+    }
+
+    public function create()
     {
         $rawBody = file_get_contents("php://input");
         $data = json_decode($rawBody, true); 
@@ -146,7 +213,7 @@ class UserService
         }
     }
 
-    public function inviteUser(){
+    public function invite(){
         $rawBody = file_get_contents("php://input");
         $data = json_decode($rawBody, true); 
 
