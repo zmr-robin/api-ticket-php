@@ -45,7 +45,13 @@ class AuthController {
         
       =================*/
     private function methodGet(){
-
+        if(isset($this->request[1]) && count($this->request) == 2){
+            return $this->auth->getData();
+        } else if (count($this->request) == 1) {
+            return $this->auth->get();
+        } else {
+            Exceptions::badRequest();
+        }
     }
 
     /* =================
@@ -55,7 +61,7 @@ class AuthController {
 
       =================*/
     private function methodPost(){
-        if (isset($this->request[1])){
+        if (count($this->request) == 1){
             return $this->auth->auth();
         }
     }

@@ -34,7 +34,7 @@ class AuthService
     //*  Get data of one key
     public function getData(){
         $stmt = Database::$conn->prepare("SELECT * FROM api WHERE ID = ?;");
-        $stmt->execute([$this->request[1]]);
+        $stmt->execute([hash("sha256" ,$this->request[1])]);
         $result = $stmt->fetch();
         if($result != false){
             return [

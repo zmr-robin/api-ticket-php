@@ -61,29 +61,29 @@ class MessageService {
         $key = str_replace("Bearer ", "", $key);
         $key = hash("sha256", $key);
 
-        if (isset($data["TicketID"]) && isset($data["Content"])){
+        if (isset($data["TicketID"]) && isset($data["Content"], $data["EmailID"])){
             $stmt = Database::$conn->prepare("SELECT * FROM ticket WHERE ID = ?");
             $stmt->execute([$data["TicketID"]]);
             $result = $stmt->fetch();
             if($result == false){
                 Exceptions::notFound("Ticket not found!");
             }
-            $stmt = Database::$conn->prepare("SELECT * FROM api WHERE ID = ?;");
-            $stmt->execute([$key]);
-            $result = $stmt->fetch();
-            if($result !== false){
-                $stmt = Database::$conn->prepare("SELECT * FROM supporter WHERE ID = ?;");
-                $stmt->execute([$result["SupporterID"]]);
-                $result = $stmt->fetch();
-                if($result !== false){
+            //$stmt = Database::$conn->prepare("SELECT * FROM api WHERE ID = ?;");
+            //$stmt->execute([$key]);
+            //$result = $stmt->fetch();
+            //if($result !== false){
+                //$stmt = Database::$conn->prepare("SELECT * FROM supporter WHERE ID = ?;");
+                //$stmt->execute([$result["SupporterID"]]);
+                //$result = $stmt->fetch();
+                //if($result !== false){
                     $stmt = Database::$conn->prepare("INSERT INTO messages (EmailID, TicketID, Content) VALUES (?, ?, ?);");
-                    $stmt->execute([$result["EmailID"], $data["TicketID"], $data["Content"]]);
-                } else {
-                    Exceptions::forbidden("API Key doesnt match a supporter account!");
-                }
-            } else {
-                Exceptions::forbidden("API Key doesnt match a supporter account!");
-            }
+                    $stmt->execute([$data["EmailID"], $data["TicketID"], $data["Content"]]);
+                //} else {
+                //    Exceptions::forbidden("API Key doesnt match a supporter account!");
+                //}
+            //} else {
+            //    Exceptions::forbidden("API Key doesnt match a supporter account!");
+            //}
         }
     }
 

@@ -46,7 +46,7 @@ class UserService
     public function getData()
     {
         Middleware::checkIfKeyIsValid();
-        Middleware::trustLevel(5);
+        //Middleware::trustLevel(5);
 
         if (isset($this->request[1])) {
             $stmt = Database::$conn->prepare("SELECT * FROM supporter WHERE ID = ?");
@@ -153,7 +153,7 @@ class UserService
         $data = json_decode($rawBody, true); 
 
         Middleware::checkIfKeyIsValid();
-        Middleware::trustLevel(5);
+        //Middleware::trustLevel(5);
 
         // ! TODO If user not exist
         if (isset($this->request[1]) && isset($data["Role"])){
