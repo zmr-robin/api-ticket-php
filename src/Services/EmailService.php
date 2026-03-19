@@ -128,6 +128,11 @@ class EmailService {
         //! TODO
     }
 
+    //* Send invite
+    public function send(){
+        
+    }
+
     //* Change email adress
     public function edit(){
         $rawBody = file_get_contents("php://input");
