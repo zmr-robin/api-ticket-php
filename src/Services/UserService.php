@@ -25,7 +25,7 @@ class UserService
     {
 
         Middleware::checkIfKeyIsValid();
-        Middleware::trustLevel(5);
+        //Middleware::trustLevel(5);
 
         $stmt = Database::$conn->prepare("SELECT * FROM supporter");
         $stmt->execute();
@@ -73,7 +73,7 @@ class UserService
     public function getRole(){
         
         Middleware::checkIfKeyIsValid();
-        Middleware::trustLevel(5);
+        //Middleware::trustLevel(5);
 
         if (isset($this->request[1])){
             $result = $this->getData();

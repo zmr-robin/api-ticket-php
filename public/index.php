@@ -27,7 +27,7 @@ if (isset($_GET["url"])) {
     $data = $result->data ?? [];
     JsonResponse::$data = is_array($data) ? $data : ["content" => $data];
 } else {
-    JsonResponse::$data = ["message" => "Welcome to the php-ticket api!", "version" => "1.0.0"];
+    JsonResponse::$data = ["message" => "Welcome to the php-ticket api!", "version" => "0.0.1"];
 }
 
 JsonResponse::send();

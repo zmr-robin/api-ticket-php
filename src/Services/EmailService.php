@@ -4,13 +4,32 @@ namespace App\Services;
 
 use App\Database\Database;
 use App\Exceptions\Exceptions;
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+use PHPMailer\PHPMailer\SMTP;
+
+require 'path/to/PHPMailer/src/Exception.php';
+require 'path/to/PHPMailer/src/PHPMailer.php';
+require 'path/to/PHPMailer/src/SMTP.php';
 
 class EmailService {
 
     private $request;
+    private $mail;
 
     function __construct($request){
         $this->request = $request;
+
+        $this->mail = new PHPMailer();
+        $this->mail->SMTPDebug = SMTP::DEBUG_SERVER;
+        $this->mail->isSMTP(); 
+        $this->mail->Host       = $_ENV["SMTP_HOST"];                   
+        $this->mail->SMTPAuth   = true;                            
+        $this->mail->Username   = $_ENV["SMTP_EMAIL"];                 
+        $this->mail->Password   = $_ENV["SMTP_PASS"];                           
+        $this->mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS; 
+        $this->mail->Port       = $_ENV["SMTP_PORT"];
+
     }
 
     //* Get all emails
@@ -129,8 +148,15 @@ class EmailService {
     }
 
     //* Send invite
-    public function send(){
-        
+    public function send($email){
+        try {
+            $this->mail->setFrom($_ENV["SMTP_EMAIL"], 'Ticket System');
+            $this->mail->addAddress($email);
+            $this->mail->Subject = 'You have been invited to the Ticket System';
+            $this->mail->Body    = 'You are now allowed to create an account!';
+        } catch (Exception $e){
+            return false;
+        }
     }
 
     //* Change email adress
