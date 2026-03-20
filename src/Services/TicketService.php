@@ -8,11 +8,11 @@ use Exception;
 
 class TicketService {
 
-    private $request;
+    private static $request;
     private $data;
 
     function __construct($request){
-        $this->request = $request;
+        self::$request = $request;
     } 
 
     //* Get all tickets

@@ -7,10 +7,10 @@ use App\Services\AuthService;
 
 class AuthController {
 
-    public $data;
-    private $request;
-    private $auth;
-    private $method;
+    public $data; // Request url
+    private $request; // Return data
+    private $auth; // AuthService object: processes request data
+    private $method; // Server request method
 
     function __construct($request, $method){
         
@@ -18,6 +18,7 @@ class AuthController {
         $this->method = $method;
         $this->auth = new AuthService($request);
 
+        // Use function based on request method
         switch($this->method){
             case "GET":
                 $this->data = $this->methodGet();
@@ -40,8 +41,8 @@ class AuthController {
     /* =================
     
     GET 
-        ! All keys:             /auth/
-        ! Key Data:             /auth/{ID}/data
+        All keys:                   /auth/
+        Spesific key data:          /auth/{ID}
         
       =================*/
     private function methodGet(){
@@ -57,7 +58,7 @@ class AuthController {
     /* =================
     
     Post 
-        ! Auth user             /auth/
+        Authentification of user    /auth/
 
       =================*/
     private function methodPost(){
@@ -69,7 +70,7 @@ class AuthController {
     /* =================
     
     Put 
-        ! Auth change duration  /auth/{ID}/duration
+        ! Change duration of key    /auth/{ID}/duration
         
       =================*/
     private function methodPut(){
@@ -85,7 +86,7 @@ class AuthController {
     /* =================
     
     Delete 
-        ! Delete auth key       /auth/{ID}/delete
+        ! Delete key               /auth/{ID}/delete
         
       =================*/
     private function methodDelete(){

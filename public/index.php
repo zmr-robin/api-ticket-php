@@ -21,13 +21,15 @@ Middleware::$header = getallheaders();
 Database::connectDatabase($_ENV["DB"], $_ENV["DB_TABLE"], 
 $_ENV["DB_USER"], $_ENV["DB_PASS"]);
 
-// If request -> use Routing Class, else return empty string. 
+// If url (request) is set create route object
 if (isset($_GET["url"])) {
     $result = new Router($_GET["url"], $_SERVER['REQUEST_METHOD']);
     $data = $result->data ?? [];
     JsonResponse::$data = is_array($data) ? $data : ["content" => $data];
-} else {
-    JsonResponse::$data = ["message" => "Welcome to the php-ticket api!", "version" => "0.0.1"];
+} // Else set response data to api version and welcome message 
+else {
+    JsonResponse::$data = ["content" => "Welcome to the php-ticket api!", "version" => "0.0.1"];
 }
 
+// Returns result data as json  
 JsonResponse::send();
