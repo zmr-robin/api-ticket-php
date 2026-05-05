@@ -1,7 +1,7 @@
 # API for php-ticket
 > API for my php-ticket project.
 
-The API helps to access the tickets via web-app *([php-ticket](https://github.com/zmr-robin))* and the dektop client *([php-ticket-client](https://github.com/zmr-robin))*.
+The API helps to access the tickets via web-app *([php-ticket](https://github.com/zmr-robin))* and the dektop client *([php-ticket-client](https://github.com/zmr-robin/client-php-ticket))*.
 
 ## Endpoints
 
